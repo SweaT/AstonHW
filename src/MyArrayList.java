@@ -1,10 +1,6 @@
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.processing.SupportedAnnotationTypes;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
 public class MyArrayList<T> {
     private T[] initialArray;
@@ -55,21 +51,48 @@ public class MyArrayList<T> {
         checkIndex(index);
 
         for (int i = index; i < size; i++) {
-            try {
-                initialArray[i] = initialArray[i + 1];
-            } catch (IndexOutOfBoundsException e) {
+            int outOfBoundsIndex = initialArray.length;
+            if (i + 1 == outOfBoundsIndex) {
                 initialArray[i] = null;
+            } else {
+                initialArray[i] = initialArray[i + 1];
             }
         }
         this.size--;
     }
 
+    public boolean remove(T object) {
+        if (getIndex(object) == -1){
+            return false;
+        }
+        remove(getIndex(object));
+        return true;
+    }
+
+    public void clear() {
+        initialArray = (T[]) new Object[initialArray.length];
+        size = 0;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
     public T get(int index) {
         checkIndex(index);
-
         return initialArray[index];
     }
 
+    // returns the object's index in the list if it exists,
+    // else returns -1
+    public int getIndex(T object) {
+        for (int i = 0; i < size; i++) {
+            if (initialArray[i].equals(object)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public T getLast() {
         if (size > 0) {
@@ -139,8 +162,9 @@ public class MyArrayList<T> {
         System.arraycopy(array, 0, initialArray, index, array.length);
     }
 
-    private void checkIndex(int index) {
+    private void checkIndex(int index) throws IndexOutOfBoundsException{
         if (index < 0 || index >= size)
             throw new IndexOutOfBoundsException("index is out of bounds");
     }
+
 }

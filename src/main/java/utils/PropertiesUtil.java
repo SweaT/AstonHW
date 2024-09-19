@@ -8,6 +8,7 @@ public final class PropertiesUtil {
 
     static {
         loadProperties();
+        System.out.println("Properties loaded");
     }
 
     public static String get(String key) {

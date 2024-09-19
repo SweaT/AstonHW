@@ -5,7 +5,6 @@ public class SchoolClass {
     private String name;
 
     public SchoolClass(String name) {
-        this.id = id;
         this.name = name;
     }
 

@@ -1,7 +1,8 @@
 package DAO;
 
 import entity.SchoolClass;
-import utils.ConnectionManager;
+import entity.Student;
+import utils.DBConnectionManager;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,8 +14,26 @@ public class SchoolClassDAO {
             VALUES (?)
             """;
 
+    private final static String GET_SQL = """
+            SELECT * FROM mydatabase.public."Classes" WHERE class_id = ?
+            """;
+
+    public SchoolClass get(int id) throws SQLException {
+        try (var connection = DBConnectionManager.open();
+             var statement = connection.prepareStatement(GET_SQL)) {
+            statement.setInt(1, id);
+            var rs = statement.executeQuery();
+            rs.next();
+            var schoolClass = new SchoolClass(rs.getString(2));
+            schoolClass.setId(id);
+            return schoolClass;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public SchoolClass save(SchoolClass schoolClass) {
-        try (var connection = ConnectionManager.open();
+        try (var connection = DBConnectionManager.open();
              var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, schoolClass.getName());
             statement.executeUpdate();
@@ -27,7 +46,6 @@ public class SchoolClassDAO {
             throw new RuntimeException(e);
         }
     }
-
 
     public static SchoolClassDAO getInstance() {
         return INSTANCE;

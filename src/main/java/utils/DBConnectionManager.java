@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public final class ConnectionManager {
+public final class DBConnectionManager {
 
     private static final String URL_KEY = "db.url";
     private static final String USER_KEY = "db.username";
@@ -18,6 +18,7 @@ public final class ConnectionManager {
         }
 
     }
+
 
     public static Connection open() {
         try {

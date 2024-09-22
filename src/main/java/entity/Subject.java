@@ -1,35 +1,22 @@
 package entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "Subjects", schema = "public")
 public class Subject {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subject_sequence_generator")
+    @SequenceGenerator(name = "subject_sequence_generator", sequenceName = "subjects_subject_id_seq", allocationSize = 1)
+    @Column(name = "subject_id")
+    private Integer id;
+
+    @Column(name = "object_name")
     private String name;
 
-    public Subject(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Subjects{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
-    }
 }

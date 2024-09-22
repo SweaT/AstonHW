@@ -1,34 +1,31 @@
 package entity;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "Classes", schema = "public")
 public class SchoolClass {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "classes_sequence_generator")
+    @SequenceGenerator(name = "classes_sequence_generator", sequenceName = "classes_class_id_seq", allocationSize = 1)
+    @Column(name = "class_id")
     private int id;
+    @Column(name = "class_name")
     private String name;
 
-    public SchoolClass(String name) {
-        this.name = name;
-    }
+    @Builder.Default
+    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<TeachersAndClasses> teachersAndClasses = new ArrayList<>();
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Classes{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
-    }
 }

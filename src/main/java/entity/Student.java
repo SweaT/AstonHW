@@ -1,51 +1,24 @@
 package entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "Students", schema = "public")
 public class Student {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_sequence_generator")
+    @SequenceGenerator(name = "student_sequence_generator", sequenceName = "students_student_id_seq", allocationSize = 1)
+    @Column(name = "student_id")
+    private Integer id;
     private String name;
-    private int classID;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "class_id")
+    private SchoolClass schoolClass;
 
-    public Student(String name, int classID) {
-        this.classID = classID;
-        this.name = name;
-    }
-
-    public Student(int id, String name, int classID) {
-        this.classID = classID;
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getClassID() {
-        return classID;
-    }
-
-    public void setClassID(int classID) {
-        this.classID = classID;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Student{" +
-               "classID=" + classID +
-               ", id=" + id +
-               ", name='" + name + '\'' +
-               '}';
-    }
 }

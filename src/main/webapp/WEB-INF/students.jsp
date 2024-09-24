@@ -2,16 +2,23 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="false" %>
 <html>
 <head>
-  <title>Students</title>
+  <title>Student list</title>
 </head>
 <body>
-<h1>Students</h1>
-<ul>
+<h1>Student list</h1>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>Имя</th>
+    <th>Класс</th>
+  </tr>
   <c:forEach var="student" items="${students}">
-    <li>
-      ${student.id} ${student.name} ${student.classID}
-    </li>
+    <tr>
+      <td>${student.id}</td>
+      <td>${student.name}</td>
+      <td>${student.schoolClass.name}</td>
+    </tr>
   </c:forEach>
-</ul>
+</table>
 </body>
 </html>

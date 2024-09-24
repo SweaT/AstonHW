@@ -1,10 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +22,17 @@ public class SchoolClass {
     private String name;
 
     @Builder.Default
-    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "schoolClass",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<TeachersAndClasses> teachersAndClasses = new ArrayList<>();
+
+    public String getTeacherNames() {
+        StringBuilder stringBuilder = new StringBuilder();
+        teachersAndClasses.forEach(obj -> stringBuilder.append(obj.getTeacher().getName()).append(" "));
+        return stringBuilder.toString();
+    }
 
 }

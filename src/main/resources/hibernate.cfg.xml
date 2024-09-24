@@ -17,6 +17,9 @@
     <mapping class="entity.Subject"/>
     <mapping class="entity.Teacher"/>
     <mapping class="entity.TeachersAndClasses"/>
+    <mapping class="entity.BaseEmployee"/>
+    <mapping class="entity.EmployeeGuard"/>
+    <mapping class="entity.EmployeeCook"/>
 
 
     <!-- DB schema will be updated if needed -->

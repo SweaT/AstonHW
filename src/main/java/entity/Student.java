@@ -17,7 +17,7 @@ public class Student {
     @Column(name = "student_id")
     private Integer id;
     private String name;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "class_id")
     private SchoolClass schoolClass;
 

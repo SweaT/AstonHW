@@ -1,101 +1,98 @@
-//package DAO;
-//
-//import entity.Student;
-//
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class StudentDAO{
-//
-//    private final static StudentDAO INSTANCE = new StudentDAO();
-//    private final static String SAVE_SQL = """
-//            INSERT INTO mydatabase.public."Students"(name, class_id)
-//            VALUES (?,?)
-//            """;
-//
-//    private final static String GET_SQL = """
-//            SELECT * FROM mydatabase.public."Students" WHERE student_id = ?
-//            """;
-//
-//    private final static String GET_ALL_SQL = """
-//            SELECT * FROM mydatabase.public."Students"
-//            ORDER BY student_id;
-//            """;
-//
-//    private final static String UPDATE_SQL = """
-//            UPDATE mydatabase.public."Students" SET name=?, class_id=? WHERE student_id = ?""";
-//
-//    private final static String DELETE_SQL = """
-//            DELETE FROM mydatabase.public."Students"
-//            where student_id = ?
-//            """;
-//
-//    /** if DB doesn't return generated keys, method returns null */
-//    public Student create(Student student) throws SQLException {
-//        try (var connection = DBConnectionManager.open();
-//             var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-//            statement.setString(1, student.getName());
-//            statement.setInt(2, student.getClassID());
-//            statement.executeUpdate();
-//            var keys = statement.getGeneratedKeys();
-//            if (keys.next()) {
-//                student.setId(keys.getInt(1));
-//            }
-//            else return null;
-//            return student;
-//        }
-//    }
-//
-//    public Student getById(int id) throws SQLException {
-//        try (var connection = DBConnectionManager.open();
-//             var statement = connection.prepareStatement(GET_SQL)) {
-//            statement.setInt(1, id);
-//            var rs = statement.executeQuery();
-//            rs.next();
-//            return new Student(rs.getInt("student_id"), rs.getString("name"), rs.getInt("class_id"));
-//        }
-//    }
-//
-//    public List<Student> getAll() throws SQLException {
-//        try (var connection = DBConnectionManager.open();
-//             var statement = connection.prepareStatement(GET_ALL_SQL)) {
-//            var rs = statement.executeQuery();
-//            List<Student> students = new ArrayList<>();
-//            while (rs.next()) {
-//                students.add(new Student(rs.getInt("student_id"), rs.getString("name"), rs.getInt("class_id")));
-//            }
-//            return students;
-//        }
-//    }
-//
-//    public boolean update(Student student) throws SQLException {
-//        try (var connection = DBConnectionManager.open();
-//             var statement = connection.prepareStatement(UPDATE_SQL)) {
-//            statement.setString(1, student.getName());
-//            statement.setInt(2, student.getClassID());
-//            statement.setInt(3, student.getId());
-//            return statement.executeUpdate() > 0;
-//        }
-//
-//    }
-//
-//    public boolean delete(int id) throws SQLException {
-//        try (var connection = DBConnectionManager.open();
-//             var statement = connection.prepareStatement(DELETE_SQL)) {
-//            statement.setInt(1, id);
-//            return statement.executeUpdate() > 0;
-//        }
-//    }
-//
-//
-//    public static StudentDAO getInstance() {
-//        return INSTANCE;
-//    }
-//
-//    private StudentDAO() {
-//    }
-//
-//
-//}
+package DAO;
+
+import entity.Student;
+import hibernate.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class StudentDAO{
+
+    private StudentDAO() {
+    }
+
+    private final static StudentDAO INSTANCE = new StudentDAO();
+
+    public static StudentDAO getInstance() {
+        return INSTANCE;
+    }
+
+    public Student create(Student student) {
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            session.persist(student);
+
+            session.getTransaction().commit();
+        }
+
+        return student;
+    }
+
+    public Student getById(int id) {
+        Student student;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            student = session.get(Student.class, id);
+
+            session.getTransaction().commit();
+        }
+
+        return student;
+    }
+
+    public List<Student> getAll() {
+        List<Student> students = new ArrayList<>();
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            students = session.createQuery("select s from Student s join fetch s.schoolClass ORDER BY s.id" , Student.class).list();
+
+            session.getTransaction().commit();
+        }
+
+        return students;
+    }
+
+    public boolean update(Student student) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            session.merge(student);
+
+            session.getTransaction().commit();
+        }
+        return true;
+    }
+
+    public boolean delete(Student student) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            session.remove(student);
+
+            session.getTransaction().commit();
+        }
+        return true;
+    }
+
+    public boolean deleteByID(int id) {
+        int result;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            Query<Student> query = session.createQuery("delete FROM Student s where s.id = :id");
+            query.setParameter("id", id);
+            result = query.executeUpdate();
+
+            session.getTransaction().commit();
+        }
+        return result > 0;
+    }
+}

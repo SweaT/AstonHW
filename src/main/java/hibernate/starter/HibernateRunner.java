@@ -1,33 +1,43 @@
 package hibernate.starter;
 
+import DAO.SchoolClassDAO;
+import DAO.StudentDAO;
 import entity.*;
 import hibernate.util.HibernateUtil;
 import org.hibernate.Session;
 
-import java.time.Instant;
+import org. hibernate. query. Query;
+import problems.ProblemsAndSolutions;
+
+import java.util.List;
+
 
 public class HibernateRunner {
 
     public static void main(String[] args) {
+        List<Teacher> teachers;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
 
-            Teacher palPalich = session.get(Teacher.class, 2);
-            SchoolClass schoolClass = session.get(SchoolClass.class, 2);
+            SchoolClass schoolClass = session.get(SchoolClass.class, 5);
 
-            schoolClass.setName("Класс Пал Палыча");
+            Teacher teacher = session.get(Teacher.class, 3);
 
-            session.merge(schoolClass);
+            session.persist(TeachersAndClasses.setTeacherAndClass(teacher, schoolClass));
 
-            palPalich.getTeachersAndClasses().
-                    forEach(teacher -> System.out.println("Пал палыч преподает в классе - " + teacher.getSchoolClass().getName()));
 
-            schoolClass.getTeachersAndClasses().
-                    forEach(teacher -> System.out.println("Имя учителя - " + teacher.getTeacher().getName()));
+
+
+
+
+//            StudentDAO.getInstance().delete();
+
 
 
             session.getTransaction().commit();
 
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
